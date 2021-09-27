@@ -1,0 +1,94 @@
+{
+    "swagger": "2.0",
+    "paths": {
+        "/Profiler/CreateProfile": {
+            "post": {
+                "parameters": [
+                    {
+                        "name": "Payload",
+                        "description": "Request Body",
+                        "required": false,
+                        "in": "body",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "payload": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                },
+                "x-auth-type": "Application & Application User",
+                "x-throttling-tier": "Unlimited"
+            }
+        },
+        "/Profiler/UpdateEmailInCRM": {
+            "post": {
+                "parameters": [
+                    {
+                        "name": "Payload",
+                        "description": "Request Body",
+                        "required": false,
+                        "in": "body",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "payload": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                },
+                "x-auth-type": "Application & Application User",
+                "x-throttling-tier": "Unlimited"
+            }
+        },
+        "/Profiler/MatchedCRMIdpProfile": {
+            "get": {
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "email",
+                        "in": "query",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "IdpUser",
+                        "in": "query",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "contactId",
+                        "in": "query",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "x-auth-type": "Application & Application User",
+                "x-throttling-tier": "Unlimited"
+            }
+        }
+    },
+    "info": {
+        "title": "CRMAPIServices",
+        "version": "1.0.0"
+    }
+}
