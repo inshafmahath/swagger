@@ -1,0 +1,437 @@
+openapi: 3.0.0
+info:
+  description: "SCFHS API's Documentation.  You can find out more about
+    SCFHS Payments Gateway at [https://sit-int.scfhs.org.sa:9443](https://sit-int.scfhs.org.sa:9443). 
+    For this sample, you have to contact the administrator to get the `authentication key`."
+  version: 0.0.3
+  title: Payments Gateway
+  termsOfService: https://sit-int.scfhs.org.sa:9443/terms/
+  contact:
+    email: api@scfhs.org
+#   license:
+#     name: Apache 2.0
+#     url: http://www.apache.org/licenses/LICENSE-2.0.html
+tags:
+  - name: Payment Request
+    description: Create, update and cancel payment request.
+  - name: Refund Request
+    description: Create a refund request for existing payment.
+#     externalDocs:
+#       description: Find out more
+#       url: https://prdgta.scfhs.org.sa
+  - name: Payment Confirmation
+    description: Receive payment confirmations.
+paths:
+  /payment/create:
+    post:
+      tags:
+        - Payment Request
+      summary: create a new payment request
+      description: ""
+      operationId: CreatePaymentRequest
+      parameters:
+        - name: SourceCode
+          description: "Pre-defined code for consumers use"
+          in: header
+          required: true
+          schema:
+            type: string
+        - name: SourceHash
+          description: "Pre-defined key for consumers use"
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/CreateRequest"
+      responses:
+        '200':
+          description: a request to be returned
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GatewayResponse'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GatewayResponse'
+  /payment/update:
+    put:
+      tags:
+        - Payment Request
+      summary: update an existing payment request
+      description: ""
+      operationId: updatePaymentRequest
+      parameters:
+        - name: SourceCode
+          description: "Pre-defined code for consumers use"
+          in: header
+          required: true
+          schema:
+            type: string
+        - name: SourceHash
+          description: "Pre-defined key for consumers use"
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/UpdateRequest"
+      responses:
+        '200':
+          description: a request to be returned
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GatewayResponse'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GatewayResponse'
+  /payment/cancel:
+   delete:
+      tags:
+        - Payment Request
+      summary: cancel payment request
+      description: ""
+      operationId: cancelPaymentRequest
+      parameters:
+        - name: SourceCode
+          description: "Pre-defined code for consumers use"
+          in: header
+          required: true
+          schema:
+            type: string
+        - name: SourceHash
+          description: "Pre-defined key for consumers use"
+          in: header
+          required: true
+          schema:
+            type: string
+        - name: TransactionId
+          in: header
+          description: payment request transaction Id to be canceled
+          required: true
+          schema:
+            type: string
+            format: uid
+        - name: ReferanceNumber
+          in: header
+          description: payment request referance number to be canceled
+          required: true
+          schema:
+            type: string
+            format: int32
+      responses:
+        '200':
+          description: a request to be returned
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GatewayResponse'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GatewayResponse'
+#   /payment/find/transactionNumber:
+#     get:
+#       tags:
+#         - Payment Registration
+#       summary: Finds payments by transaction number
+#       operationId: findTransactionByNumber
+#       parameters:
+#         - name: status
+#           in: query
+#           description: Status values that need to be considered for filter
+#           required: true
+#           explode: true
+#           schema:
+#             type: array
+#             items:
+#               type: string
+#               enum:
+#                 - available
+#                 - pending
+#                 - sold
+#               default: available
+#       responses:
+#         "200":
+#           description: successful operation
+#           content:
+#             application/xml:
+#               schema:
+#                 type: array
+#                 items:
+#                   $ref: "#/components/schemas/PaymentRequest"
+#             application/json:
+#               schema:
+#                 type: array
+#                 items:
+#                   $ref: "#/components/schemas/PaymentRequest"
+#         "400":
+#           description: Invalid status value
+#   "/payment/{paymentId}":
+#     get:
+#       tags:
+#         - Payment Registration
+#       summary: Find transaction by number
+#       description: Returns a single transaction
+#       operationId: getTransactionByNumber
+#       parameters:
+#         - name: paymentId
+#           in: path
+#           description: number of transaction to return
+#           required: true
+#           schema:
+#             type: integer
+#             format: int64
+#       responses:
+#         "200":
+#           description: successful operation
+#           content:
+#             application/xml:
+#               schema:
+#                 $ref: "#/components/schemas/PaymentRequest"
+#             application/json:
+#               schema:
+#                 $ref: "#/components/schemas/PaymentRequest"
+#         "400":
+#           description: Invalid ID supplied
+#         "404":
+#           description: Transaction not found
+servers:
+  - url: https://sit-int.scfhs.org.sa:9443/draft
+components:
+  requestBodies:
+    CreateRequest:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CreatePaymentRequest"
+#         application/xml:
+#           schema:
+#             $ref: "#/components/schemas/CreateRequest"
+      description: Payment request  that needs to be added to the gateway
+      required: true
+    UpdateRequest:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/UpdatePaymentRequest"
+#         application/xml:
+#           schema:
+#             $ref: "#/components/schemas/UpdateRequest"
+      description: Payment request  that needs to be added to the gateway
+      required: true
+  schemas:
+    CreatePaymentRequest:
+      required:
+        - ServiceCode
+        - RegistrationNumber
+      type: object
+      properties:
+        ServiceCode:
+          type: string
+          format: string
+        ServiceStartDate:
+          type: string
+          format: date-time
+        ServiceEndDate:
+          type: string
+          format: date-time
+        RegistrationNumber:
+          type: string
+          format: string
+        BeneficiaryId:
+          type: string
+          format: string
+        PaymentDetails:
+          type: object
+          properties:
+           PaymentMethod:
+            type: string
+            description: Supported Payment Methods
+            enum:
+             - SADAD
+             - HYPERPAY
+            default: SADAD
+           ValidFor:
+            type: integer
+            format: int64
+            description: Payment du date in minutes
+           AmountDetails:
+            type: object
+            properties:
+              TotalAmount:
+                type: number
+                format: douple
+                minimum: 10
+                maximum: 99999
+                minLength: 2
+                maxLength: 5
+              ItemsCollection:
+                type: array
+                items:
+                    $ref: "#/components/schemas/Item"
+           SourceReferenceNumber:
+            type: string
+            format: string
+      xml:
+        name: PaymentRequest
+    UpdatePaymentRequest:
+      required:
+        - ServiceCode
+        - RegistrationNumber
+      type: object
+      properties:
+        ServiceCode:
+          type: string
+          format: string
+        ServiceStartDate:
+          type: string
+          format: date-time
+        ServiceEndDate:
+          type: string
+          format: date-time
+        RegistrationNumber:
+          type: string
+          format: string
+        BeneficiaryId:
+          type: string
+          format: string
+        PaymentDetails:
+          type: object
+          properties:
+           PaymentMethod:
+            type: string
+            description: Supported Payment Methods
+            enum:
+             - SADAD
+             - HYPERPAY
+            default: SADAD
+           ValidFor:
+            type: integer
+            format: int64
+            description: Payment du date in minutes
+           AmountDetails:
+            type: object
+            properties:
+              TotalAmount:
+                type: number
+                format: douple
+                minimum: 10
+                maximum: 99999
+                minLength: 2
+                maxLength: 5
+              ItemsCollection:
+                type: array
+                items:
+                    $ref: "#/components/schemas/Item"
+           ReferenceNumber:
+            type: string
+            format: string
+           TransactionId:
+            type: string
+            format: string
+      xml:
+        name: PaymentRequest
+    Item:
+      type: object
+      properties:
+        ItemCode:
+          type: string
+          format: string
+          nullable: false
+        ItemName:
+          type: string
+          format: string
+          nullable: false
+        ItemValue:
+          type: number
+          format: number
+          example: 11.21
+          nullable: false
+        Taxable:
+          type: string
+          nullable: false
+          example: Y for Applicaple, N for Not Applicaple , 0 for zero-tax
+          description: Supported VAT (TAX) Types
+          items:
+            $ref: "#/components/schemas/TaxableType"
+      xml:
+        name: Item   
+    PaymentMethod:
+      type: string
+      description: Supported Payment Methods
+      enum:
+        - SADAD
+        - HYPERPAY
+      default: SADAD  
+    TaxableType:
+      type: string
+      description: VAT Type
+      enum:
+        - Y
+        - N
+        - 0
+      default: 0
+#     SearchBy:
+#       type: string
+#       description: Supported Search Methods
+#       enum:
+#         - ByTransactionId
+#         - BySourceReferancId
+#         - ByProfileId
+#       default: ByTransactionId
+    ErrorType:
+      type: string
+      description: Supported Error Types
+      enum:
+        - Technical
+        - Business
+      default: BusinessError
+    GatewayResponse:
+      type: object
+      properties:
+        TransactionId:
+          type: integer
+          format: uid
+        TransactionReferance:
+          type: string
+          format: string
+          description: Request referance, could be the checkoutId for Hyperpay.
+        RequestNumber:
+          type: string
+          format: string
+          description: Request number, main identifier for the payment request.
+        TransactionStatus:
+          type: object
+          properties:
+            StatusCode:
+              type: string
+              format: string
+            StatusDesc:
+              type: string
+              format: string
+            ExecutedOn:
+              type: string
+              format: date-time
+            ErrorDetails:
+              type: object
+              properties:
+                  Code:
+                    type: integer
+                    format: int32
+                  Type:
+                    type: string
+                    items:
+                      $ref: "#/components/schemas/ErrorType"
+                  Message:
+                    type: string
+                    format: string
